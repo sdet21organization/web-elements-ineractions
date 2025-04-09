@@ -1,6 +1,5 @@
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -10,7 +9,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.lang.Thread.sleep;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class WebElementsTablesTests {
 
@@ -49,7 +49,7 @@ public class WebElementsTablesTests {
         WebElement mobileNumber = driver.findElement(By.id("userNumber"));
         mobileNumber.sendKeys("1234567890");
 
-        WebElement gender = driver.findElement(By.xpath("//label[text()='Other']"));
+        WebElement gender = driver.findElement(By.xpath("//label[text()='Male']"));
         gender.click();
 
 
@@ -67,11 +67,54 @@ public class WebElementsTablesTests {
         WebElement resultsTable = driver.findElement(By.cssSelector(".modal-body table"));
         assertTrue(resultsTable.isDisplayed());
 
+        WebElement tableCellStudentName = driver.findElement(By.xpath("//table/tbody/tr/td[2]"));
+
+        assertEquals("Kumar Krishna", tableCellStudentName.getText());
+
+        WebElement tableCellStudentEmail = driver.findElement(By.xpath("//table/tbody/tr[2]/td[2]"));
+
+        assertEquals("abc@abc.com", tableCellStudentEmail.getText());
+
+        WebElement tableCellStudentMobile = driver.findElement(By.xpath("//table//td[contains(text(),'Mobile')]/../td[2]"));
+
+        assertEquals("1234567890", tableCellStudentMobile.getText());
+
+        checkTableCell("Gender", "Male");
+        checkTableCell("Date of Birth", "09 April,2025");
+
+
+    }
+
+
+    @Test
+    public void demoQA02() {
+
+        fillingForm01();
+
+        WebElement resultsTable = driver.findElement(By.cssSelector(".modal-body table"));
+        assertTrue(resultsTable.isDisplayed());
+
+        checkTableCell("Student Name", "Kumar Krishna");
+        checkTableCell("Student Email", "abc@abc.com");
+        checkTableCell("Gender", "Male");
+        checkTableCell("Date of Birth", "09 April,2025");
+
+    }
+
+
+    void checkTableCell(String cellName, String cellValue) {
+
+        String locator = String.format("//table//td[contains(text(),'%s')]/../td[2]", cellName);
+
+        WebElement tableCell = driver.findElement(By.xpath(locator));
+
+        assertEquals(cellValue, tableCell.getText());
 
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws InterruptedException {
+        sleep(Duration.ofSeconds(7));
         driver.close();
     }
 }
